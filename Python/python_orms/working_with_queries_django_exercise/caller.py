@@ -1,6 +1,5 @@
 import os
 import django
-from django.db.models import Case, When, Value, F, Q, QuerySet
 
 # Set up Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ready_to_use_django_skeleton.settings")
@@ -23,7 +22,7 @@ def delete_negative_rated_arts() -> None:
 
 
 def show_the_most_expensive_laptop() -> str:
-    most_expensive = Laptop.objects.order_by("-price", "-id").first()
+    most_expensive = Laptop.objects.order_by('-price', '-id').first()
     return f"{most_expensive.brand} is the most expensive laptop available for {most_expensive.price}$!"
 
 
@@ -39,16 +38,11 @@ def update_to_16_GB_memory() -> None:
     Laptop.objects.filter(brand__in=["Apple", "Dell", "Acer"]).update(memory=16)
 
 
-def update_operation_systems() -> None:
-    laptops = Laptop.objects.update(
-        operation_system=Case(
-            When(brand="Asus", then=Value("Windows")),
-            When(brand="Apple", then=Value("MacOS")),
-            When(brand__in=["Dell", "Acer"], then=Value("Linux")),
-            When(brand="Lenovo", then=Value("Chrome OS")),
-            default=F("OS")
-        )
-    )
+def update_operation_systems():
+    Laptop.objects.filter(brand="Asus").update(operation_system="Windows")
+    Laptop.objects.filter(brand="Apple").update(operation_system="MacOS")
+    Laptop.objects.filter(brand__in=["Dell", "Acer"]).update(operation_system="Linux")
+    Laptop.objects.filter(brand="Lenovo").update(operation_system="Chrome OS")
 
 
 def delete_inexpensive_laptops() -> None:
