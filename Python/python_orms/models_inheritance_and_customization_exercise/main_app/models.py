@@ -2,6 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 
+from datetime import timedelta
+
+
 class BaseCharacter(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -113,3 +116,92 @@ class MaskedCreditCardField(models.CharField):
 class CreditCard(models.Model):
     card_owner = models.CharField(max_length=100)
     card_number = MaskedCreditCardField()
+
+
+class Hotel(models.Model):
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+
+
+class Room(models.Model):
+    hotel = models.ForeignKey(to=Hotel, on_delete=models.CASCADE)
+    number = models.CharField(max_length=100, unique=True)
+    capacity = models.PositiveIntegerField()
+    total_guests = models.PositiveIntegerField()
+    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def clean(self):
+        if self.total_guests > self.capacity:
+            raise ValidationError("Total guests are more than the capacity of the room")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+
+        super().save(*args, **kwargs)
+        return f"Room {self.number} created successfully"
+
+
+class BaseReservation(models.Model):
+    room = models.ForeignKey(to=Room, on_delete=models.CASCADE)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    def reservation_period(self) -> int:
+        return (self.end_date - self.start_date).days
+
+    def calculate_total_cost(self) -> float:
+        return round((self.reservation_period() * self.room.price_per_night), 1)
+
+    @property
+    def available(self) -> bool:
+        overlaps = self.__class__.objects.filter(
+                                                 room=self.room,
+                                                 end_date__gte=self.start_date,
+                                                 start_date__lte=self.end_date,
+        )
+
+        return not overlaps.exists()
+
+    def clean(self):
+        if self.start_date >= self.end_date:
+            raise ValidationError("Start date cannot be after or in the same end date")
+
+        elif not self.available:
+            raise ValidationError(f"Room {self.room.number} cannot be reserved")
+
+    class Meta:
+        abstract = True
+
+
+class RegularReservation(BaseReservation):
+    def save(self, *args, **kwargs) -> str:
+        super().clean()
+
+        super().save(*args, **kwargs)
+
+        return f"Regular reservation for room {self.room.number}"
+
+
+class SpecialReservation(BaseReservation):
+    def extend_reservation(self, days: int):
+        cur_available = SpecialReservation.objects.filter(
+            room=self.room,
+            end_date__gte=self.start_date,
+            start_date__lte=self.end_date + timedelta(days=days),
+        )
+
+        if cur_available:
+            raise ValidationError("Error during extending reservation")
+
+        else:
+            self.end_date += timedelta(days=days)
+            self.save()
+
+            return f"Extended reservation for room {self.room.number} with {days} days"
+
+    def save(self, *args, **kwargs):
+        super().clean()
+
+        super().save(*args, **kwargs)
+
+        return f"Special reservation for room {self.room.number}"
