@@ -103,3 +103,47 @@ class DiscountedProduct(Product):
 
     class Meta:
         proxy = True
+
+
+class RechargeEnergyMixin:
+    def recharge_energy(self, amount: int):
+        self.energy += amount
+
+        if self.energy > 100:
+            self.energy = 100
+
+        self.save()
+
+
+class Hero(models.Model, RechargeEnergyMixin):
+    name = models.CharField(max_length=100)
+    hero_title = models.CharField(max_length=100)
+    energy = models.PositiveIntegerField()
+
+
+class SpiderHero(Hero):
+    class Meta:
+        proxy = True
+
+    def swing_from_buildings(self) -> str:
+        self.energy -= 80
+
+        if self.energy > 0:
+            self.save()
+            return f"{self.name} as Spider Hero swings from buildings using web shooters"
+        else:
+            return f"{self.name} as Spider Hero is out of web shooter fluid"
+
+
+class FlashHero(Hero):
+    class Meta:
+        proxy = True
+
+    def run_at_super_speed(self) -> str:
+        self.energy -= 65
+
+        if self.energy > 0:
+            self.save()
+            return f"{self.name} as Flash Hero runs at lightning speed, saving the day"
+        else:
+            return f"{self.name} as Flash Hero needs to recharge the speed force"
