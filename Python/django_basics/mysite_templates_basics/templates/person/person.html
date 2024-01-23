@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Person Details.</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+{% if profile_picture %}
+    <img src="{% static 'images/FELV-cat.jpg'%}" alt="Currently a default image.">
+{% else %}
+    <p>An image should be here</p>
+{% endif %}
+<h1>Person: {{ full_name|truncatewords:1 }}</h1>
+<p>Bio: {{ bio|truncatechars:50 }}</p>
+<p>Birth: {{ birth_date|date:"D d M Y" }}</p>
+<p>Height: {{ height|floatformat:1 }}</p>
+<p>Is a student: {{ is_student|default:"No" }}</p>
+<p>Length of bio: {{ bio|length }}</p>
+{% if is_student and age >= 18 %}
+    <div>Person is both an adult and a student. Truly the worst of both worlds combined in one</div>
+{% elif is_student %}
+    <div>Person is a student. Good for him.</div>
+{% elif age >= 18 %}
+    <div>Person is an adult. Probably has more cash than the student.</div>
+{% else %}
+    <div>This is a cat. And it probably has less stuff to worry about than you.</div>
+{% endif %}
+<a href="{% url 'person_per_id' person_id=1 %}">View first person.</a>
+</body>
+</html>
