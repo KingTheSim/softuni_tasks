@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta CHARSET="UTF-8">
+    <title>Person Form</title>
+</head>
+<body>
+<h1>Person Form</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    {{ form.as_p }}
+    
+{#    {{ form.non_field_errors }}#}
+{#    #}
+{#    <label for="{{ form.full_name.id_for_label }}">Full Name:</label>#}
+{#    {{ form.full_name }}#}
+{#    {{ form.full_name.errors }}#}
+{#    #}
+{#    <label for="{{ form.age.id_for_label }}">Age:</label>#}
+{#    {{ form.age }}#}
+{#    {{ form.age.errors }}#}
+{#    #}
+{#    <label for="{{ form.height.id_for_label }}">Height:</label>#}
+{#    {{ form.height }}#}
+{#    {{ form.height.errors }}#}
+{#    #}
+{#    <label for="{{ form.birth_date.id_for_label }}">Birth date:</label>#}
+{#    {{ form.birth_date }}#}
+{#    {{ form.birth_date.errors }}#}
+{#    #}
+{#    <label for="{{ form.wake_up_time.id_for_label }}">Wake up time:</label>#}
+{#    {{ form.wake_up_time }}#}
+{#    {{ form.wake_up_time.errors }}#}
+{#    #}
+{#    <label for="{{ form.is_student.id_for_label }}">Is a student:</label>#}
+{#    {{ form.is_student }}#}
+{#    {{ form.is_student.errors }}#}
+{#    #}
+{#    <label for="{{ form.email.id_for_label }}">Email:</label>#}
+{#    {{ form.email }}#}
+{#    {{ form.email.errors }}#}
+{#    #}
+{#    <label for="{{ form.website_url.id_for_label }}">Website url:</label>#}
+{#    {{ form.website_url }}#}
+{#    {{ form.website_url.errors }}#}
+{#    #}
+{#    <label for="{{ form.profile_picture.id_for_label }}">Profile picture:</label>#}
+{#    {{ form.website_url }}#}
+{#    {{ form.website_url.errors }}#}
+{#    #}
+{#    <label for="{{ form.document_file.id_for_label }}">Document:</label>#}
+{#    {{ form.document_file }}#}
+{#    {{ form.document_file.errors }}#}
+{#    #}
+{#    <label for="{{ form.bio.id_for_label }}">Bio:</label>#}
+{#    {{ form.bio }}#}
+{#    {{ form.bio.errors }}#}
+    
+    <button type="submit">Add person</button>
+</form>
+</body>
+</html>

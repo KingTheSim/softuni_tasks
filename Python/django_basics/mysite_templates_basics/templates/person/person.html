@@ -28,5 +28,10 @@
     <div>This is a cat. And it probably has less stuff to worry about than you.</div>
 {% endif %}
 <a href="{% url 'person_per_id' person_id=1 %}">View first person.</a>
+<form action="person_per_id/1/" method="post">
+    <label for="name">Your name: </label>
+    <input type="text" id="name" name="name" maxlength="50" required>
+    <input type="submit" value="OK">
+</form>
 </body>
 </html>
